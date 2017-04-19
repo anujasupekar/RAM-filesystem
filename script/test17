@@ -1,0 +1,23 @@
+tid=`basename $0`
+mount=mount/$tid
+
+mkdir -p $mount
+. $(dirname $0)/mount.sh $mount 64; mountcode=$?
+
+if [ "$mountcode" -ne 0 ]; then
+        exit $mountcode
+fi
+
+output_file=results/$tid.postmark
+output_expect="1 1 100.00 70.00 25.00 45.00 48.00 52.00 70.00 15.00 55.00 710790.00 934864.00"
+
+./postmark testcases/$tid.conf > $output_file 2>&1
+
+output=`tail -n 1 $output_file`
+returncode=1
+if [ "$output" = "$output_expect" ]; then
+	returncode=0
+fi
+sleep 1
+fusermount -u $mount
+exit $returncode

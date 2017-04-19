@@ -1,0 +1,21 @@
+tid=`basename $0`
+mount=mount/$tid
+
+mkdir -p $mount
+. $(dirname $0)/mount.sh $mount; mountcode=$?
+
+if [ "$mountcode" -ne 0 ]; then
+        exit $mountcode
+fi
+
+mkdir $mount/dir1
+mkdir $mount/dir2
+returncode=1
+output=`ls -r $mount | tr -d '\n'`
+output_expect="dir2dir1"
+if [ "$output" == "$output_expect" ]; then
+        returncode=0
+fi
+sleep 1
+fusermount -u $mount
+exit $returncode

@@ -1,0 +1,19 @@
+tid=`basename $0`
+mount=mount/$tid
+
+mkdir -p $mount
+. $(dirname $0)/mount.sh $mount; mountcode=$?
+
+if [ "$mountcode" -ne 0 ]; then
+        exit $mountcode
+fi
+
+dir=$mount/1/2/3/4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19/20
+mkdir -p $dir
+returncode=1
+if [ -d $dir ]; then
+        returncode=0
+fi
+sleep 1
+fusermount -u $mount
+exit $returncode

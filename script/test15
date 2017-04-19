@@ -1,0 +1,36 @@
+tid=`basename $0`
+mount=mount/$tid
+
+mkdir -p $mount
+. $(dirname $0)/mount.sh $mount; mountcode=$?
+
+if [ "$mountcode" -ne 0 ]; then
+        exit $mountcode
+fi
+
+file=$mount/$tid
+echo "CSC501" >> $file
+count=0
+output=""
+
+while read LINE
+do
+	output="$output$LINE"
+	if [ $count -eq 1 ]; then
+                break
+        fi
+        sleep 1
+	echo "CSC501" >> $file
+	count=1
+done < $file
+
+sync &
+wait
+
+returncode=1
+if [ "$output" == "CSC501CSC501" ]; then
+        returncode=0
+fi
+sleep 1
+fusermount -u $mount
+exit $returncode

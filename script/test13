@@ -1,0 +1,21 @@
+tid=`basename $0`
+mount=mount/$tid
+
+mkdir -p $mount
+. $(dirname $0)/mount.sh $mount 24; mountcode=$?
+
+if [ "$mountcode" -ne 0 ]; then
+        exit $mountcode
+fi
+
+file=$mount/$tid
+
+dd if=/dev/zero of=$file bs=1M count=20 > /dev/null 2>&1
+
+returncode=1
+if [ -f $file ]; then
+	returncode=0
+fi
+sleep 1
+fusermount -u $mount
+exit $returncode

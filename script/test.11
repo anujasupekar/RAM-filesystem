@@ -1,0 +1,31 @@
+tid=test11
+
+conf=testcases/$tid.conf
+output=results/$tid.output
+
+dir=$tid
+mkdir -p $dir
+returncode=-1
+./postmark $conf > $output
+rm -rf $dir
+
+num_read=7
+num_append=93
+num_create=119
+num_delete=119
+
+real_create=`cat $output | grep 'per second' | grep created | cut -d' ' -f1`
+real_append=`cat $output | grep 'per second' | grep appended | cut -d' ' -f1`
+real_delete=`cat $output | grep 'per second' | grep deleted | cut -d' ' -f1`
+real_read=`cat $output | grep 'per second' | grep -v 'bytes' | grep read | cut -d' ' -f1`
+
+#echo $real_read $num_read
+#echo $real_append $num_append
+#echo $real_create $num_create
+#echo $real_delete $num_delete
+
+if  [[ $real_read -eq $num_read && $real_append -eq $num_append && $real_create -eq $num_create && $real_delete -eq $num_delete ]]; then
+	returncode=0
+fi
+
+exit $returncode

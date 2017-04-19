@@ -1,0 +1,23 @@
+tid=`basename $0`
+mount=mount/$tid
+
+mkdir -p $mount
+. $(dirname $0)/mount.sh $mount; mountcode=$?
+
+if [ "$mountcode" -ne 0 ]; then
+        exit $mountcode
+fi
+
+file1=$mount/$tid.1
+file2=$mount/$tid.2
+
+dd if=/dev/zero of=$file1 bs=1M count=10 > /dev/null 2>&1
+dd if=/dev/zero of=$file2 bs=1M count=10 > /dev/null 2>&1; created=$?
+
+returncode=1
+if [[ -f $file1 && "$created" -ne 0 ]]; then
+	returncode=0
+fi
+sleep 1
+fusermount -u $mount
+exit $returncode
